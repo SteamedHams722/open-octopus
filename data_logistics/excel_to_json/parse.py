@@ -9,8 +9,9 @@ import sys
 
 #Create the folder variables that will be used across the functions
 user_home = os.path.expanduser('~')
-source_folder = user_home + r'/scion_scripts/extract_load/json/input/'
-output_folder = user_home + r'/scion_scripts/extract_load/json/output/' #Use this for directing the output file.
+user_home = user_home.replace(os.sep,'/')
+source_folder = user_home + r'/open-octopus/data_logistics/excel_to_json/input/' #Need to create this folder and add the files to it
+output_folder = user_home + r'/open-octopus/data_logistics/excel_to_json/output/' #Use this for directing the output file.
 
 def data_prep(file_name, headers, sheet):
     #Create the file path based on the user inputs
