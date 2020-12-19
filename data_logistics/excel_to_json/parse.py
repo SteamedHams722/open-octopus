@@ -1,5 +1,9 @@
+'''Important: Create a folder called input in the /multi-tool/data_logistics/excel_to_json path
+and store the file(s) you need to parse there'''
+
 #Import libraries.
 import pandas as pd
+import numpy as np
 import simplejson
 import os
 import shutil
@@ -10,8 +14,8 @@ import sys
 #Create the folder variables that will be used across the functions
 user_home = os.path.expanduser('~')
 user_home = user_home.replace(os.sep,'/')
-source_folder = user_home + r'/open-octopus/data_logistics/excel_to_json/input/' #Need to create this folder and add the files to it
-output_folder = user_home + r'/open-octopus/data_logistics/excel_to_json/output/' #Use this for directing the output file.
+source_folder = user_home + r'/multi-tool/data_logistics/excel_to_json/input/' #Need to create this folder and add the files to it
+output_folder = user_home + r'/multi-tool/data_logistics/excel_to_json/output/' #Use this for directing the output file.
 
 def data_prep(file_name, headers, sheet):
     #Create the file path based on the user inputs
@@ -34,6 +38,10 @@ def data_prep(file_name, headers, sheet):
         sys.exit(0)
     else:
         print(f'SUCCESS: Dataframe for {file_name} created.')
+    
+    # Convert datetime fields to string since datetime fields can't be encoded into json
+    for col in excel_df.select_dtypes([np.datetime64]):
+        excel_df[col] = excel_df[col].astype(str)
         
     #Create a basic list of the dictionaries from the dataframe
     dict_list = excel_df.to_dict(orient='records')
@@ -108,7 +116,7 @@ def load_json(file_name, headers, sheet):
     # Adding a try block in case the output folder doesn't exist.
     try:
         with open(output_path, 'w') as json_output:
-            simplejson.dump(json_list, json_output, ensure_ascii=False, indent=2, ignore_nan=True) #ignore_nan sets nan to null
+            simplejson.dump(json_list, json_output, indent=2, ignore_nan=True) #ignore_nan sets nan to null
     except FileNotFoundError as e:
         print(f'ERROR: {output_file} not created due to issue writing to json. Message: {e}')
     else:
